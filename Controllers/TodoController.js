@@ -1,7 +1,7 @@
-const Todo = require('../Models/TodoModel');
-
+const EmailService = require('../services/EmailService');
+const Todo = require('../Models/TodoModel')
 const post_Item = async (req,res) =>{
-    const{title,description,deadline,priority} = req.body; 
+    const{title,description,deadline,priority, user_email} = req.body; 
 
     // Validation are needed to be added
     try {
@@ -10,7 +10,13 @@ const post_Item = async (req,res) =>{
             description,
             deadline,
             priority,
+            user_email,
         })
+        
+        EmailService.sendTaskNotification(todo).catch(err => {
+            console.error('[ToDoController] Email failed:', err);
+        });
+
         res.status(201).json(todo);
     } catch (error) {
         console.log(error);
