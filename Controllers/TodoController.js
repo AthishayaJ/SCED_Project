@@ -1,14 +1,23 @@
-const Todo = require('../Models/TodoModel');
-
+const EmailService = require('../services/EmailService');
+const Todo = require('../Models/TodoModel')
 const post_Item = async (req,res) =>{
-    const{title,description} = req.body;
+    const{title,description,deadline,priority, user_email} = req.body; 
 
+    // Validation are needed to be added
     try {
         const todo = await Todo.create({
             title,
-            description
+            description,
+            deadline,
+            priority,
+            user_email,
         })
-        res.status(201).json("Todo Added!");
+        
+        EmailService.sendTaskNotification(todo).catch(err => {
+            console.error('[ToDoController] Email failed:', err);
+        });
+
+        res.status(201).json(todo);
     } catch (error) {
         console.log(error);
         res.status(500).json({message :error.message});
@@ -28,12 +37,12 @@ const get_Item = async (req,res) =>{
 
 const update_Item = async (req,res) =>{
     try {
-        const {title,description} = req.body;
+        const {title,description,deadline,priority} = req.body;
         const id = req.params.id;
 
         const updateGoal = await Todo.findByIdAndUpdate(
             id,
-            {title, description},
+            {title, description,deadline,priority},
             {new : true}
         )
 
