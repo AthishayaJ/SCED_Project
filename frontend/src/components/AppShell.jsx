@@ -82,10 +82,10 @@ function AppShell() {
   };
 
   return (
-    <div className="relative h-screen overflow-hidden text-slate-900">
+    <div className="relative app-viewport overflow-hidden text-slate-900">
       <div className="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full bg-blue-300/20 blur-3xl" />
       <div className="pointer-events-none absolute -right-28 top-12 h-72 w-72 rounded-full bg-indigo-300/20 blur-3xl" />
-      <div className="flex h-full flex-col overflow-hidden">
+      <div className="flex min-h-full flex-col overflow-hidden">
         <header className="z-10 shrink-0 border-b border-slate-700/70 bg-slate-950/55 px-3 py-3 backdrop-blur-md sm:px-4">
           <div className="mx-auto max-w-7xl">
             <div className="flex items-start justify-between gap-3">
@@ -166,16 +166,16 @@ function AppShell() {
         <button
           type="button"
           onClick={openAddEventModal}
-          className="fixed bottom-6 right-6 z-30 flex h-12 w-12 items-center justify-center rounded-full bg-blue-700 text-3xl leading-none text-white shadow-lg shadow-blue-900/30 transition hover:scale-105 hover:bg-blue-800"
-          aria-label="Add event"
-          title="Add event"
+          className="add-event-fab fixed bottom-4 right-5 z-30 inline-flex h-12 items-center justify-center rounded-full bg-blue-700 px-4 text-sm font-semibold text-white shadow-lg shadow-blue-900/30 transition hover:bg-blue-800 sm:bottom-6 sm:right-8"
+          aria-label="Add Event"
+          title="Add Event"
         >
-          +
+          Add Event
         </button>
 
         {activePanel === "profile" && (
-          <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-900/40 p-4">
-            <div className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-5 shadow-xl">
+          <div className="fixed inset-0 z-40 flex items-center justify-center overflow-y-auto bg-slate-900/40 p-4">
+            <div className="app-modal-panel w-full max-w-lg overflow-y-auto rounded-2xl border border-slate-200 bg-white p-5 shadow-xl">
               <h3 className="text-base font-bold text-slate-800">Profile</h3>
 
               <div className="mt-3 space-y-4">
@@ -262,8 +262,8 @@ function AppShell() {
         )}
 
         {activePanel === "settings" && (
-          <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-900/40 p-4">
-            <div className="w-full max-w-xl rounded-2xl border border-slate-200 bg-white p-5 shadow-xl">
+          <div className="fixed inset-0 z-40 flex items-center justify-center overflow-y-auto bg-slate-900/40 p-4">
+            <div className="app-modal-panel w-full max-w-xl overflow-y-auto rounded-2xl border border-slate-200 bg-white p-5 shadow-xl">
               <h3 className="text-base font-bold text-slate-800">Settings</h3>
 
               <div className="mt-3 space-y-3">

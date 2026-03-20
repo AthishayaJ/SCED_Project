@@ -31,7 +31,7 @@ const VALID_TABS = new Set(TAB_OPTIONS.map((tab) => tab.value));
 const PRIORITY_RANK = { High: 3, Medium: 2, Low: 1 };
 const ONE_HOUR_MS = 60 * 60 * 1000;
 const ONE_DAY_MS = 24 * ONE_HOUR_MS;
-const EMPTY_STATE_SUBTITLE = "Click + to add your first event";
+const EMPTY_STATE_SUBTITLE = "Click Add Event to add your first event";
 
 function formatDateTime(dateInput, timeInput) {
   return new Date(`${dateInput}T${timeInput || "23:59"}:00`).toLocaleString(
@@ -320,7 +320,7 @@ function TasksPage() {
   return (
     <div className="space-y-6">
       {toast && (
-        <div className="fixed right-4 top-20 z-30 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700 shadow-md">
+        <div className="fixed left-1/2 top-20 z-30 w-[calc(100%-1.25rem)] max-w-sm -translate-x-1/2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700 shadow-md sm:left-auto sm:right-4 sm:w-auto sm:max-w-none sm:translate-x-0">
           {toast}
         </div>
       )}
@@ -472,7 +472,7 @@ function TasksPage() {
 
       {isModalOpen && (
         <div className="fixed inset-0 z-40 grid place-items-center overflow-y-auto bg-slate-900/45 p-4">
-          <div className="w-full max-w-2xl max-h-[calc(100vh-2rem)] overflow-y-auto rounded-2xl border border-slate-200 bg-white p-4 shadow-xl sm:p-5">
+          <div className="app-modal-panel w-full max-w-2xl overflow-y-auto rounded-2xl border border-slate-200 bg-white p-4 shadow-xl sm:p-5">
             <div className="mb-4 flex items-center justify-between">
               <h4 className="text-base font-bold text-slate-800">
                 {editingId ? "Edit Event" : "Add Event"}

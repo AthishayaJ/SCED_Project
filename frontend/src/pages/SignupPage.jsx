@@ -61,11 +61,11 @@ function SignupPage() {
   };
 
   return (
-    <div className="relative h-screen overflow-hidden text-slate-900">
+    <div className="relative app-viewport overflow-hidden text-slate-900">
       <div className="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full bg-cyan-300/25 blur-3xl" />
       <div className="pointer-events-none absolute -right-28 top-12 h-72 w-72 rounded-full bg-blue-300/25 blur-3xl" />
 
-      <div className="flex h-full flex-col overflow-hidden">
+      <div className="flex min-h-full flex-col overflow-hidden">
         <header className="z-10 shrink-0 border-b border-slate-700/70 bg-slate-950/55 px-3 py-3 backdrop-blur-md sm:px-4">
           <div className="mx-auto max-w-7xl">
             <div className="inline-flex rounded-2xl border border-slate-700/20 bg-gradient-to-r from-slate-900 via-blue-800 to-cyan-700 px-3.5 py-1.5 shadow-lg shadow-blue-500/20 ring-1 ring-white/30">
