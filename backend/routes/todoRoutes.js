@@ -1,13 +1,15 @@
-const express = require('express');
+const express = require('express'); 
 const router = express.Router();
+
 const todoController = require('../controllers/todoController');
+const { protect } = require('../Middleware/AuthMiddleware'); // 🔐 JWT middleware
 
-// Address: GET http://localhost:3000/api/todos
-// Action: Fetches all campus tasks
-router.get('/', todoController.getTodos);
+// 🔐 Protected Routes
 
-// Address: POST http://localhost:3000/api/todos
-// Action: Saves a new campus task
-router.post('/', todoController.createTodo);
+// GET all todos (only for logged-in users)
+router.get('/', protect, todoController.getTodos);
+
+// CREATE a new todo (only for logged-in users)
+router.post('/', protect, todoController.createTodo);
 
 module.exports = router;
