@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { APP_NAME } from "../constants/appName";
-import API from "../../../api"; // Updated API with loginUser function
+import API from "../services/api"; // Updated API with loginUser function
 
 function LoginPage() {
   const [appTitleMain, appTitleSuffix = ""] = APP_NAME.split(" & ");
