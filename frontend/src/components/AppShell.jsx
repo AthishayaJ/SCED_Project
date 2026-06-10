@@ -42,6 +42,7 @@ function AppShell() {
 
   const handleLogout = () => {
     window.localStorage.removeItem(STORAGE_KEYS.session);
+    window.localStorage.removeItem("token");
     window.location.replace("/login");
   };
 
@@ -308,7 +309,11 @@ function AppShell() {
                       }
                       className="h-9 w-full rounded-lg border border-slate-300 px-2.5 text-sm"
                     >
+                      <option value="">Auto (by priority)</option>
                       <option value="10_minutes">10 minutes</option>
+                      <option value="30_minutes">30 minutes</option>
+                      <option value="6_hours">6 hours</option>
+                      <option value="12_hours">12 hours</option>
                       <option value="1_hour">1 hour</option>
                       <option value="1_day">1 day</option>
                     </select>

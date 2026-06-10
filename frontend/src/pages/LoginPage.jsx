@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { APP_NAME } from "../constants/appName";
-import API from "../services/api"; // Updated API with loginUser function
+import { STORAGE_KEYS } from "../constants/storageKeys";
+import { loginUser } from "../services/api";
 
 function LoginPage() {
   const [appTitleMain, appTitleSuffix = ""] = APP_NAME.split(" & ");
@@ -14,18 +15,28 @@ function LoginPage() {
     setErrorText(""); // clear previous errors
 
     try {
-      // Call backend login endpoint
-      const response = await API.post("/auth/login", { email, password });
-
-      // Save JWT token in localStorage
+      const response = await loginUser({ email, password });
       localStorage.setItem("token", response.data.token);
+      localStorage.setItem(STORAGE_KEYS.session, "1");
+      if (response.data.user) {
+        localStorage.setItem(
+          STORAGE_KEYS.profile,
+          JSON.stringify({
+            name: response.data.user.name,
+            email: response.data.user.email,
+            avatarUrl: "",
+            joinedDate: new Date().toISOString().slice(0, 10),
+          }),
+        );
+      }
 
-      // Redirect to protected page
-      window.location.replace("/events"); // or use react-router navigate
+      window.location.replace("/events");
     } catch (err) {
       console.error(err);
+      localStorage.removeItem("token");
       setErrorText(
-        err.response?.data?.message || "Login failed. Check your credentials."
+        err.response?.data?.message ||
+          "Login failed. Backend server is unavailable or credentials are invalid."
       );
     }
   };

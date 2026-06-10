@@ -1,17 +1,17 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { APP_NAME } from "../constants/appName";
-import { useAppContext } from "../context/AppContext";
 import { STORAGE_KEYS } from "../constants/storageKeys";
+import { signupUser } from "../services/api";
 
 function SignupPage() {
-  const { updateProfile } = useAppContext();
   const [appTitleMain, appTitleSuffix = ""] = APP_NAME.split(" & ");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errorText, setErrorText] = useState("");
+  const [successText, setSuccessText] = useState("");
 
   const getSavedAccounts = () => {
     try {
@@ -24,40 +24,56 @@ function SignupPage() {
     }
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     if (password !== confirmPassword) {
       setErrorText("Password and confirm password do not match.");
       return;
     }
     setErrorText("");
+    setSuccessText("");
 
-    const joinedDate = new Date().toISOString().slice(0, 10);
-    const nextProfile = {
-      name: name.trim() || "Campus User",
-      email: email.trim() || "campus.user@sced.local",
-      avatarUrl: "",
-      joinedDate,
-    };
-    window.localStorage.setItem(
-      STORAGE_KEYS.profile,
-      JSON.stringify(nextProfile),
-    );
-    window.localStorage.setItem(
-      STORAGE_KEYS.account,
-      JSON.stringify({
-        email: email.trim().toLowerCase(),
+    const saveLocalAccount = (user = {}) => {
+      window.localStorage.removeItem("token");
+      window.localStorage.removeItem(STORAGE_KEYS.session);
+      window.localStorage.setItem(
+        STORAGE_KEYS.account,
+        JSON.stringify({
+          email: email.trim().toLowerCase(),
+          password,
+        }),
+      );
+      const normalizedEmail = email.trim().toLowerCase();
+      const accounts = getSavedAccounts();
+      const nextAccounts = accounts.filter((item) => item?.email !== normalizedEmail);
+      nextAccounts.push({
+        email: normalizedEmail,
         password,
-      }),
-    );
-    const normalizedEmail = email.trim().toLowerCase();
-    const accounts = getSavedAccounts();
-    const nextAccounts = accounts.filter((item) => item?.email !== normalizedEmail);
-    nextAccounts.push({ email: normalizedEmail, password });
-    window.localStorage.setItem(STORAGE_KEYS.accounts, JSON.stringify(nextAccounts));
-    window.localStorage.setItem(STORAGE_KEYS.session, "1");
-    updateProfile(nextProfile);
-    window.location.replace("/events");
+        name: user.name || name.trim() || "Campus User",
+      });
+      window.localStorage.setItem(STORAGE_KEYS.accounts, JSON.stringify(nextAccounts));
+    };
+
+    try {
+      const response = await signupUser({ name, email, password });
+      saveLocalAccount({
+        name: response.data.user?.name,
+        email: response.data.user?.email,
+      });
+      setSuccessText("Registration successful. Please login.");
+      window.setTimeout(() => window.location.replace("/login"), 700);
+    } catch (err) {
+      if (err.response) {
+        setErrorText(
+          err.response.data?.message || "Signup failed. Please try again.",
+        );
+        return;
+      }
+
+      saveLocalAccount();
+      setSuccessText("Registration successful. Please login.");
+      window.setTimeout(() => window.location.replace("/login"), 700);
+    }
   };
 
   return (
@@ -93,6 +109,11 @@ function SignupPage() {
               {errorText && (
                 <p className="mb-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
                   {errorText}
+                </p>
+              )}
+              {successText && (
+                <p className="mb-3 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
+                  {successText}
                 </p>
               )}
 

@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { STORAGE_KEYS } from "../constants/storageKeys";
+import { createTodo, deleteTodo, getTodos, updateTodo } from "../services/api";
 
 const AppContext = createContext(null);
 
@@ -28,9 +29,9 @@ function getInitialProfile() {
 const initialSettings = {
   emailNotifications: true,
   pushNotifications: true,
-  defaultReminder: "1_hour",
+  defaultReminder: "",
   autoDeleteDays: 30,
-  defaultPriority: "Medium",
+  defaultPriority: "",
 };
 
 function getEventDateTime(task) {
@@ -116,6 +117,27 @@ export function AppProvider({ children }) {
   const [settings, setSettings] = useState(initialSettings);
 
   useEffect(() => {
+    if (typeof window === "undefined" || !window.localStorage.getItem("token")) {
+      return;
+    }
+
+    let isMounted = true;
+    getTodos()
+      .then((response) => {
+        if (isMounted) {
+          setTasks(Array.isArray(response.data) ? response.data : []);
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to load events from database:", err);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
     const pruneExpiredTasks = () => {
       setTasks((prev) => {
         const next = prev.filter((task) =>
@@ -149,7 +171,7 @@ export function AppProvider({ children }) {
     [tasks],
   );
 
-  const addTask = (task) => {
+  const addTask = async (task) => {
     const taskId =
       typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
         ? crypto.randomUUID()
@@ -164,17 +186,38 @@ export function AppProvider({ children }) {
       status: "upcoming",
       createdAt: new Date().toISOString().slice(0, 10),
     };
-    setTasks((prev) => [newTask, ...prev]);
+
+    try {
+      const response = await createTodo(newTask);
+      setTasks((prev) => [response.data, ...prev]);
+      return response.data;
+    } catch (err) {
+      console.error("Failed to save event to database:", err);
+      throw err;
+    }
   };
 
-  const updateTask = (taskId, updates) => {
-    setTasks((prev) =>
-      prev.map((task) => (task.id === taskId ? { ...task, ...updates } : task)),
-    );
+  const updateTask = async (taskId, updates) => {
+    try {
+      const response = await updateTodo(taskId, updates);
+      setTasks((prev) =>
+        prev.map((task) => (task.id === taskId ? response.data : task)),
+      );
+      return response.data;
+    } catch (err) {
+      console.error("Failed to update event in database:", err);
+      throw err;
+    }
   };
 
-  const deleteTask = (taskId) => {
-    setTasks((prev) => prev.filter((task) => task.id !== taskId));
+  const deleteTask = async (taskId) => {
+    try {
+      await deleteTodo(taskId);
+      setTasks((prev) => prev.filter((task) => task.id !== taskId));
+    } catch (err) {
+      console.error("Failed to delete event from database:", err);
+      throw err;
+    }
   };
 
   const archiveTask = (taskId) => updateTask(taskId, { status: "archived" });

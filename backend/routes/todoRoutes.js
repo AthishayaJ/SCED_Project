@@ -12,4 +12,8 @@ router.get('/', protect, todoController.getTodos);
 // CREATE a new todo (only for logged-in users)
 router.post('/', protect, todoController.createTodo);
 
+router.put('/:id', protect, todoController.updateTodo);
+
+router.delete('/:id', protect, todoController.deleteTodo);
+
 module.exports = router;

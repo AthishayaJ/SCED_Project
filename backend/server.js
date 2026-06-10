@@ -1,39 +1,35 @@
-require('dotenv').config(); // 🔥 KEEP THIS FIRST
+require('dotenv').config({ path: require('path').join(__dirname, '.env') });
 
 const express = require('express');
-const mongoose = require('mongoose');
 const cors = require('cors');
-
-// 🔥 ADD THESE
-//const { connectDB } = require('./config/sql');
-//const authRoutes = require('./routes/AuthRoutes');
+const authRoutes = require('./routes/AuthRoutes');
+const todoRoutes = require('./routes/todoRoutes');
+const { startScheduler } = require('./services/ReminderScheduler');
+const { initMySQL } = require('./config/mysql');
 
 const app = express();
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 
-// 🔥 CONNECT MSSQL (for auth)
-//connectDB();
-
-// Connect to MongoDB (for todos)
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/smart_campus';
-
-mongoose.connect(MONGO_URI)
-    .then(() => console.log("✅ MongoDB Connected Successfully"))
-    .catch(err => console.error("❌ MongoDB Connection Error:", err));
-
-// 🔥 ADD AUTH ROUTES
-//app.use('/api/auth', authRoutes);
-
-// Existing todo routes
-const todoRoutes = require('./routes/todoRoutes');
+app.use('/api/auth', authRoutes);
 app.use('/api/todos', todoRoutes);
 
-// Start server
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-    console.log(`🚀 Server is running on http://localhost:${PORT}`);
-});
+async function startServer() {
+    try {
+        await initMySQL();
+        console.log('MySQL connected and schema initialized');
+        startScheduler();
+
+        app.listen(PORT, () => {
+            console.log(`Server is running on http://localhost:${PORT}`);
+        });
+    } catch (err) {
+        console.error('MySQL startup error:', err.message);
+        process.exit(1);
+    }
+}
+
+startServer();

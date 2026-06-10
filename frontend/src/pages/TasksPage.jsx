@@ -6,10 +6,10 @@ const makeDefaultForm = (settings) => ({
   title: "",
   description: "",
   type: "",
-  priority: settings.defaultPriority || "Medium",
+  priority: settings.defaultPriority || "",
   dueDate: "",
   eventTime: "09:00",
-  remindBefore: settings.defaultReminder || "1_hour",
+  remindBefore: settings.defaultReminder || "",
 });
 
 const fieldLabelClass =
@@ -276,10 +276,10 @@ function TasksPage() {
       title: task.title || "",
       description: task.description || "",
       type: task.type || "",
-      priority: task.priority || settings.defaultPriority || "Medium",
+      priority: task.priority || settings.defaultPriority || "",
       dueDate: task.dueDate || "",
       eventTime: task.eventTime || "09:00",
-      remindBefore: task.remindBefore || settings.defaultReminder || "1_hour",
+      remindBefore: task.remindBefore || settings.defaultReminder || "",
     });
     setIsModalOpen(true);
   };
@@ -290,25 +290,34 @@ function TasksPage() {
     setIsSubmitting(true);
     await new Promise((resolve) => setTimeout(resolve, 400));
 
-    if (editingId) {
-      updateTask(editingId, form);
-      setToast("Event updated successfully.");
-    } else {
-      addTask(form);
-      setToast("Event added successfully.");
-    }
+    try {
+      if (editingId) {
+        await updateTask(editingId, form);
+        setToast("Event updated successfully.");
+      } else {
+        await addTask(form);
+        setToast("Event added successfully.");
+      }
 
-    setIsSubmitting(false);
-    setIsModalOpen(false);
-    setEditingId(null);
-    setForm(makeDefaultForm(settings));
+      setIsModalOpen(false);
+      setEditingId(null);
+      setForm(makeDefaultForm(settings));
+    } catch (err) {
+      setToast(err.response?.data?.message || "Could not save event.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const handleDelete = (taskId) => {
+  const handleDelete = async (taskId) => {
     const ok = window.confirm("Are you sure you want to delete this event?");
     if (!ok) return;
-    deleteTask(taskId);
-    setToast("Event deleted.");
+    try {
+      await deleteTask(taskId);
+      setToast("Event deleted.");
+    } catch (err) {
+      setToast(err.response?.data?.message || "Could not delete event.");
+    }
   };
 
   const handleDiscard = () => {
@@ -442,7 +451,14 @@ function TasksPage() {
                   {task.status !== "archived" && computedStatus !== "completed" ? (
                     <button
                       type="button"
-                      onClick={() => archiveTask(task.id)}
+                      onClick={async () => {
+                        try {
+                          await archiveTask(task.id);
+                          setToast("Event archived.");
+                        } catch (err) {
+                          setToast(err.response?.data?.message || "Could not archive event.");
+                        }
+                      }}
                       className="rounded-lg border border-amber-300 bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-700 hover:bg-amber-100"
                     >
                       Archive
@@ -450,7 +466,14 @@ function TasksPage() {
                   ) : task.status === "archived" ? (
                     <button
                       type="button"
-                      onClick={() => markUpcoming(task.id)}
+                      onClick={async () => {
+                        try {
+                          await markUpcoming(task.id);
+                          setToast("Event unarchived.");
+                        } catch (err) {
+                          setToast(err.response?.data?.message || "Could not unarchive event.");
+                        }
+                      }}
                       className="rounded-lg border border-emerald-300 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 hover:bg-emerald-100"
                     >
                       Unarchive
@@ -531,8 +554,8 @@ function TasksPage() {
                       setForm((prev) => ({ ...prev, priority: event.target.value }))
                     }
                     className={selectClass}
-                    required
                   >
+                    <option value="">Auto (by deadline)</option>
                     <option value="High">High</option>
                     <option value="Medium">Medium</option>
                     <option value="Low">Low</option>
@@ -580,7 +603,11 @@ function TasksPage() {
                     }
                     className={selectClass}
                   >
+                    <option value="">Auto (by priority)</option>
                     <option value="10_minutes">10 minutes</option>
+                    <option value="30_minutes">30 minutes</option>
+                    <option value="6_hours">6 hours</option>
+                    <option value="12_hours">12 hours</option>
                     <option value="1_hour">1 hour</option>
                     <option value="1_day">1 day</option>
                   </select>
