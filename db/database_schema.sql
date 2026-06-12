@@ -1,14 +1,10 @@
--- Step 1: Prepare the Environment
 CREATE DATABASE IF NOT EXISTS smart_campus;
 USE smart_campus;
 
--- Step 2: Clean up existing tables to avoid "Table already exists" errors
--- We drop them in this specific order because of Foreign Key dependencies
 DROP TABLE IF EXISTS tasks;
 DROP TABLE IF EXISTS events;
 DROP TABLE IF EXISTS users;
 
--- Step 3: Create the Users Table
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -18,7 +14,6 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Step 4: Create the Events Table (Now includes the 'category' column)
 CREATE TABLE events (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(150) NOT NULL,
@@ -30,7 +25,6 @@ CREATE TABLE events (
     FOREIGN KEY (organizer_id) REFERENCES users(id)
 );
 
--- Step 5: Create the Tasks Table
 CREATE TABLE tasks (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,
@@ -40,7 +34,6 @@ CREATE TABLE tasks (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- Step 6: Add Sample Data
 INSERT INTO users (name, email, password, role) 
 VALUES ('Riveen', 'riveen@uom.lk', 'hashed_pw_123', 'student');
 
@@ -50,7 +43,6 @@ VALUES ('Tech Expo 2026', 'Showcase of final year projects', '2026-04-10 10:00:0
 INSERT INTO tasks (user_id, task_name, priority) 
 VALUES (1, 'Update Database Schema', 'High');
 
--- Step 7: Verify Everything
 SELECT * FROM users;
 SELECT * FROM events;
 SELECT * FROM tasks;

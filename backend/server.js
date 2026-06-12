@@ -1,5 +1,9 @@
 require('dotenv').config({ path: require('path').join(__dirname, '.env') });
 
+if (!process.env.JWT_SECRET) {
+    console.warn('⚠️  WARNING: JWT_SECRET is not set. Using insecure default — set it in .env before deploying!');
+}
+
 const express = require('express');
 const cors = require('cors');
 const authRoutes = require('./routes/AuthRoutes');
@@ -9,7 +13,11 @@ const { initMySQL } = require('./config/mysql');
 
 const app = express();
 
-app.use(cors());
+const allowedOrigin = process.env.ALLOWED_ORIGIN || 'http://localhost:5173';
+app.use(cors({
+    origin: allowedOrigin,
+    credentials: true,
+}));
 app.use(express.json());
 
 app.use('/api/auth', authRoutes);
