@@ -1,12 +1,4 @@
-# Ignore dependency folders (too heavy for GitHub)
 node_modules/
-backend/node_modules/
-frontend/node_modules/
-
-# Ignore your private passwords and email keys
 .env
-backend/.env
-
-# Ignore system junk
-.DS_Store
-Thumbs.db
+dist/
+build/
