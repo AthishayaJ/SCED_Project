@@ -149,7 +149,7 @@ function SignupPage() {
                 <div className="group relative my-3 rounded-xl border border-slate-300/90 bg-white/70 px-3 pb-2 pt-5 transition focus-within:border-blue-500 focus-within:bg-white">
                   <input
                     type="password"
-                    required minLength={4} maxLength={4}
+                    required minLength={4} maxLength={12}
                     placeholder=" "
                     value={password}
                     onChange={(event) => setPassword(event.target.value)}
@@ -163,7 +163,7 @@ function SignupPage() {
                 <div className="group relative my-3 rounded-xl border border-slate-300/90 bg-white/70 px-3 pb-2 pt-5 transition focus-within:border-blue-500 focus-within:bg-white">
                   <input
                     type="password"
-                    required minLength={4} maxLength={4}
+                    required minLength={4} maxLength={12}
                     placeholder=" "
                     value={confirmPassword}
                     onChange={(event) => setConfirmPassword(event.target.value)}
