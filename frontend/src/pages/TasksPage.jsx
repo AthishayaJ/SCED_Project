@@ -78,9 +78,9 @@ function getPriorityPillClass(priority) {
 }
 
 function getEventCardClass(priority) {
-  if (priority === "High") return "border-red-200 bg-red-50/40";
-  if (priority === "Medium") return "border-amber-200 bg-amber-50/40";
-  return "border-emerald-200 bg-emerald-50/35";
+  if (priority === "High") return "border-red-500/40 bg-red-900/25";
+  if (priority === "Medium") return "border-amber-500/40 bg-amber-900/25";
+  return "border-emerald-500/40 bg-emerald-900/25";
 }
 
 function getStartStatus(diffMs) {
@@ -287,6 +287,11 @@ function TasksPage() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (!form.dueDate || isSubmitting) return;
+    const today = new Date().toISOString().slice(0, 10);
+    if (form.dueDate < today) {
+        setToast("Event date cannot be in the past.");
+        return;
+    }
     setIsSubmitting(true);
     await new Promise((resolve) => setTimeout(resolve, 400));
 
@@ -326,6 +331,10 @@ function TasksPage() {
     setForm(makeDefaultForm(settings));
   };
 
+  const totalCount = tasksWithMeta.length;
+  const activeCount = tasksWithMeta.filter((i) => i.computedStatus === "upcoming").length;
+  const completedCount = tasksWithMeta.filter((i) => i.computedStatus === "completed").length;
+
   return (
     <div className="space-y-6">
       {toast && (
@@ -334,9 +343,24 @@ function TasksPage() {
         </div>
       )}
 
-      <section className="fade-up flex min-h-[60vh] flex-col rounded-2xl border border-slate-200 bg-white/85 p-3 shadow-sm backdrop-blur-sm sm:p-4">
-        <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-          <div className="inline-flex rounded-lg border border-slate-200 bg-white p-1">
+      <div className="grid grid-cols-3 gap-3">
+        <div className="rounded-xl border border-slate-700/40 bg-slate-800/80 px-4 py-3 backdrop-blur-sm">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">Total Events</p>
+          <p className="mt-1 text-2xl font-semibold text-slate-100">{totalCount}</p>
+        </div>
+        <div className="rounded-xl border border-slate-700/40 bg-slate-800/80 px-4 py-3 backdrop-blur-sm">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">Active</p>
+          <p className="mt-1 text-2xl font-semibold text-emerald-400">{activeCount}</p>
+        </div>
+        <div className="rounded-xl border border-slate-700/40 bg-slate-800/80 px-4 py-3 backdrop-blur-sm">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">Completed</p>
+          <p className="mt-1 text-2xl font-semibold text-blue-400">{completedCount}</p>
+        </div>
+      </div>
+
+      <section className="fade-up flex min-h-[60vh] flex-col rounded-2xl border border-slate-700/40 bg-slate-800/80 p-3 shadow-sm backdrop-blur-sm sm:p-4">
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2 border-b border-slate-700/40 pb-3">
+          <div className="inline-flex rounded-lg border border-slate-700/50 bg-slate-900/50 p-1">
             {TAB_OPTIONS.map((tabOption) => (
               <button
                 key={tabOption.value}
@@ -344,40 +368,29 @@ function TasksPage() {
                 onClick={() => setTab(tabOption.value)}
                 className={`rounded-md px-3 py-1.5 text-xs font-semibold transition ${
                   tab === tabOption.value
-                    ? "bg-blue-700 text-white"
-                    : "text-slate-600 hover:bg-slate-100"
+                    ? "bg-blue-600 text-white"
+                    : "text-slate-400 hover:text-slate-200"
                 }`}
               >
                 {tabOption.label}
               </button>
             ))}
           </div>
-        </div>
-
-        <div className="mb-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
-          <div className="rounded-lg border border-slate-200 bg-slate-50 p-2">
-            <label className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-slate-500">
-              Filter by Priority
-            </label>
+          <div className="flex flex-wrap items-center gap-2">
             <select
               value={priorityFilter}
               onChange={(event) => setPriorityFilter(event.target.value)}
-              className="h-9 w-full rounded-lg border border-slate-300 bg-white px-2.5 text-sm text-slate-700"
+              className="h-8 rounded-lg border border-slate-600 bg-slate-900/70 px-2.5 text-xs text-slate-300 outline-none"
             >
-              <option value="all">All</option>
+              <option value="all">All priorities</option>
               <option value="High">High</option>
               <option value="Medium">Medium</option>
               <option value="Low">Low</option>
             </select>
-          </div>
-          <div className="rounded-lg border border-slate-200 bg-slate-50 p-2">
-            <label className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-slate-500">
-              Sort by
-            </label>
             <select
               value={sortBy}
               onChange={(event) => setSortBy(event.target.value)}
-              className="h-9 w-full rounded-lg border border-slate-300 bg-white px-2.5 text-sm text-slate-700"
+              className="h-8 rounded-lg border border-slate-600 bg-slate-900/70 px-2.5 text-xs text-slate-300 outline-none"
             >
               <option value="date_asc">Date (Nearest first)</option>
               <option value="date_desc">Date (Latest first)</option>
@@ -391,8 +404,20 @@ function TasksPage() {
           {!visibleEvents.length && (
             <div className="flex min-h-[38vh] items-center justify-center">
               <div className="text-center">
-                <p className="text-base font-semibold text-slate-700">{emptyStateText.title}</p>
+                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-slate-600 bg-slate-700/50">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 9v7.5" />
+                  </svg>
+                </div>
+                <p className="text-base font-semibold text-slate-200">{emptyStateText.title}</p>
                 <p className="mt-1 text-xs text-slate-500">{emptyStateText.subtitle}</p>
+                <button
+                  type="button"
+                  onClick={openAddModal}
+                  className="mt-4 inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700"
+                >
+                  <span>+</span> Add Event
+                </button>
               </div>
             </div>
           )}
@@ -411,11 +436,11 @@ function TasksPage() {
               >
                 <div className="flex flex-wrap items-start justify-between gap-2">
                   <div>
-                    <p className="text-sm font-semibold text-slate-800">{task.title}</p>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-sm font-semibold text-slate-100">{task.title}</p>
+                    <p className="text-xs text-slate-400">
                       {eventType + " • " + formatDateTime(task.dueDate, task.eventTime)}
                     </p>
-                    <p className="mt-1 text-xs text-slate-600">{eventDescription}</p>
+                    <p className="mt-1 text-xs text-slate-300">{eventDescription}</p>
                   </div>
                   <div className="flex items-center gap-2">
                     <span
@@ -444,7 +469,7 @@ function TasksPage() {
                   <button
                     type="button"
                     onClick={() => openEditModal(task)}
-                    className="rounded-lg border border-blue-300 bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-800 hover:bg-blue-100"
+                    className="rounded-lg border border-blue-500/50 bg-blue-500/20 px-3 py-1.5 text-xs font-semibold text-blue-300 hover:bg-blue-500/30"
                   >
                     Edit
                   </button>
@@ -459,7 +484,7 @@ function TasksPage() {
                           setToast(err.response?.data?.message || "Could not archive event.");
                         }
                       }}
-                      className="rounded-lg border border-amber-300 bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-700 hover:bg-amber-100"
+                      className="rounded-lg border border-amber-500/50 bg-amber-500/20 px-3 py-1.5 text-xs font-semibold text-amber-300 hover:bg-amber-500/30"
                     >
                       Archive
                     </button>
@@ -474,7 +499,7 @@ function TasksPage() {
                           setToast(err.response?.data?.message || "Could not unarchive event.");
                         }
                       }}
-                      className="rounded-lg border border-emerald-300 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 hover:bg-emerald-100"
+                      className="rounded-lg border border-emerald-500/50 bg-emerald-500/20 px-3 py-1.5 text-xs font-semibold text-emerald-300 hover:bg-emerald-500/30"
                     >
                       Unarchive
                     </button>
@@ -482,7 +507,7 @@ function TasksPage() {
                   <button
                     type="button"
                     onClick={() => handleDelete(task.id)}
-                    className="rounded-lg border border-red-300 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-100"
+                    className="rounded-lg border border-red-500/50 bg-red-500/20 px-3 py-1.5 text-xs font-semibold text-red-300 hover:bg-red-500/30"
                   >
                     Delete
                   </button>
@@ -571,6 +596,14 @@ function TasksPage() {
                 <input
                   type="date"
                   value={form.dueDate}
+                  onChange={(event) =>
+                    setForm((prev) => ({
+                      ...prev,
+                      dueDate: event.target.value,
+                    }))
+                }
+                  min={new Date().toISOString().slice(0, 10)} 
+                  max="2099-12-31" 
                   onChange={(event) =>
                     setForm((prev) => ({ ...prev, dueDate: event.target.value }))
                   }
