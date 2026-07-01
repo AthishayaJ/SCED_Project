@@ -273,7 +273,7 @@ function AppShell() {
                   <p className="mb-2 text-sm font-semibold text-slate-700">
                     Notification Settings
                   </p>
-                  <label className="mb-2 flex items-center justify-between text-sm">
+                  <label className="mb-2 flex items-center justify-between text-sm text-slate-700">
                     <span>Email notifications</span>
                     <input
                       type="checkbox"
@@ -284,7 +284,7 @@ function AppShell() {
                       className="accent-blue-600"
                     />
                   </label>
-                  <label className="mb-2 flex items-center justify-between text-sm">
+                  <label className="mb-2 flex items-center justify-between text-sm text-slate-700">
                     <span>Push notifications</span>
                     <input
                       type="checkbox"
@@ -302,13 +302,13 @@ function AppShell() {
                     Reminder Settings
                   </p>
                   <label className="text-sm">
-                    <span className="mb-1 block">Default reminder time</span>
+                    <span className="mb-1 block text-slate-700">Default reminder time</span>
                     <select
                       value={settings.defaultReminder}
                       onChange={(event) =>
                         updateSettings({ defaultReminder: event.target.value })
                       }
-                      className="h-9 w-full rounded-lg border border-slate-300 px-2.5 text-sm"
+                      className="h-9 w-full rounded-lg border border-slate-300 px-2.5 text-sm text-slate-700"
                     >
                       <option value="">Auto (by priority)</option>
                       <option value="10_minutes">10 minutes</option>
@@ -326,13 +326,13 @@ function AppShell() {
                     Task Settings
                   </p>
                   <label className="mb-2 block text-sm">
-                    <span className="mb-1 block">Auto delete after</span>
+                    <span className="mb-1 block text-slate-700">Auto delete after</span>
                     <select
                       value={settings.autoDeleteDays}
                       onChange={(event) =>
                         updateSettings({ autoDeleteDays: Number(event.target.value) })
                       }
-                      className="h-9 w-full rounded-lg border border-slate-300 px-2.5 text-sm"
+                      className="h-9 w-full rounded-lg border border-slate-300 px-2.5 text-sm text-slate-700"
                     >
                       <option value={7}>7 days</option>
                       <option value={30}>30 days</option>
@@ -352,7 +352,7 @@ function AppShell() {
                 <button
                   type="button"
                   onClick={() => setActivePanel(null)}
-                  className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800"
+                  className="rounded-lg bg-blue-700 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-800"
                 >
                   Save Settings
                 </button>
