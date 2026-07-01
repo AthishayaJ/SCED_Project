@@ -30,6 +30,10 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/todos', todoRoutes);
 
+app.get('/health', (_req, res) => {
+    res.status(200).json({ status: 'ok' });
+});
+
 const PORT = process.env.PORT || 5000;
 
 async function startServer() {
@@ -38,8 +42,8 @@ async function startServer() {
         console.log('MySQL connected and schema initialized');
         startScheduler();
 
-        app.listen(PORT, () => {
-            console.log(`Server is running on http://localhost:${PORT}`);
+        app.listen(PORT, '0.0.0.0', () => {
+            console.log(`Server is running on http://0.0.0.0:${PORT}`);
         });
     } catch (err) {
         console.error('MySQL startup error:', err.message);

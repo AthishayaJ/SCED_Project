@@ -52,3 +52,34 @@ cd frontend
 npm install
 npm run dev
 ```
+
+## Railway Deployment
+
+This backend is ready for Railway deployment.
+
+### Required Railway setup
+1. Create a new Railway project.
+2. Add a service from this repository and set the root to the backend folder.
+3. Add a MySQL database service.
+4. Set these environment variables in Railway:
+   - PORT=5000
+   - MYSQL_HOST=your-railway-mysql-host
+   - MYSQL_PORT=3306
+   - MYSQL_USER=your-railway-mysql-user
+   - MYSQL_PASSWORD=your-railway-mysql-password
+   - MYSQL_DATABASE=your-railway-database-name
+   - JWT_SECRET=your-long-random-secret
+   - ALLOWED_ORIGIN=https://your-frontend-domain
+   - EMAIL_USER=your-gmail-address@gmail.com
+   - EMAIL_PASS=your-gmail-app-password
+   - TZ=Asia/Colombo
+   - REMINDER_CRON=* * * * *
+
+### Frontend API URL
+Set the frontend environment variable:
+
+```bash
+VITE_API_URL=https://your-railway-backend-url
+```
+
+Then rebuild the frontend.
