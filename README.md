@@ -44,9 +44,6 @@ cd backend
 cp .env.example .env (Copy and Paste the things in env.example and paste it in a new file named as .env)
 npm install
 npm start
-
-npm install
-npm start
 ```
 
 ### Frontend
