@@ -25,6 +25,32 @@ function createTransporter() {
     });
 }
 
+async function sendPasswordReset(user, resetLink) {
+    assertValidEmail(user.email);
+
+    const transporter = createTransporter();
+    await transporter.sendMail({
+        from: `"Smart Campus" <${process.env.EMAIL_USER}>`,
+        to: user.email,
+        subject: 'Reset your Smart Campus password',
+        html: `
+            <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;border:1px solid #ddd;border-radius:8px;overflow:hidden;">
+                <div style="background:#1d4ed8;padding:20px;text-align:center;">
+                    <h1 style="color:#fff;margin:0;font-size:20px;">Password Reset Request</h1>
+                </div>
+                <div style="padding:24px;">
+                    <p>Hi ${user.name || ''},</p>
+                    <p>Click the button below to reset your password. This link expires in 30 minutes.</p>
+                    <p style="text-align:center;margin:24px 0;">
+                        <a href="${resetLink}" style="background:#1d4ed8;color:#fff;padding:12px 20px;border-radius:6px;text-decoration:none;">Reset Password</a>
+                    </p>
+                    <p>If you didn't request this, you can safely ignore this email.</p>
+                </div>
+            </div>`,
+    });
+}
+
+
 function formatDeadline(dt) {
     return new Date(dt).toLocaleString('en-US', {
         timeZone: process.env.TZ || 'Asia/Colombo',
@@ -69,4 +95,4 @@ async function sendReminder(task, reminderText) {
     });
 }
 
-module.exports = { sendReminder };
+module.exports = { sendReminder,sendPasswordReset };
