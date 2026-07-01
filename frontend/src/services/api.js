@@ -17,6 +17,8 @@ API.interceptors.request.use((req) => {
 
 export const loginUser = (credentials) => API.post('/api/auth/login', credentials);
 export const signupUser = (credentials) => API.post('/api/auth/signup', credentials);
+export const forgotPassword = (email) => API.post('/api/auth/forgot-password', { email });
+export const resetPassword = (token, password) => API.post('/api/auth/reset-password', { token, password });
 
 export const getTodos = () => API.get("/api/todos");
 export const createTodo = (todoData) => API.post('/api/todos', todoData);

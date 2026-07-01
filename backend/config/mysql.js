@@ -24,6 +24,15 @@ async function initMySQL() {
         )
     `);
 
+    const [resetTokenCol] = await pool.query(
+        `SELECT COUNT(*) AS count FROM INFORMATION_SCHEMA.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'users' AND COLUMN_NAME = 'reset_token'`,
+    );
+    if (!resetTokenCol[0].count) {
+        await pool.query('ALTER TABLE users ADD COLUMN reset_token VARCHAR(255) DEFAULT NULL');
+        await pool.query('ALTER TABLE users ADD COLUMN reset_token_expires DATETIME DEFAULT NULL');
+    }
+
     await pool.query(`
         CREATE TABLE IF NOT EXISTS todos (
             id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
