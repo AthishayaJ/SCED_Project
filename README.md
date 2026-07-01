@@ -41,7 +41,7 @@ SCED_Project/
 ### Backend
 ```bash
 cd backend
-cp .env.example .env
+cp .env.example .env (Copy and Paste the things in env.example and paste it in a new file named as .env)
 npm install
 npm start
 ```
@@ -52,20 +52,3 @@ cd frontend
 npm install
 npm run dev
 ```
-
-## Environment Variables
-
-Create `backend/.env` using `backend/.env.example` as reference:
-
-| Variable | Description |
-|---|---|
-| `PORT` | Server port (default: 5000) |
-| `MYSQL_HOST` | MySQL host |
-| `MYSQL_USER` | MySQL username |
-| `MYSQL_PASSWORD` | MySQL password |
-| `MYSQL_DATABASE` | Database name |
-| `JWT_SECRET` | Secret key for JWT tokens |
-| `EMAIL_USER` | Gmail address for sending reminders |
-| `EMAIL_PASS` | Gmail App Password |
-| `TZ` | Timezone (e.g. Asia/Colombo) |
-| `REMINDER_CRON` | Cron schedule for reminders |
