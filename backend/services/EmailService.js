@@ -17,7 +17,10 @@ function assertValidEmail(email) {
 function createTransporter() {
     assertEmailConfig();
     return nodemailer.createTransport({
-        service: 'gmail',
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false, 
+        family: 4, // force IPv4 — avoids Railway IPv6 egress issues
         auth: {
             user: process.env.EMAIL_USER,
             pass: process.env.EMAIL_PASS,
